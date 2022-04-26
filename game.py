@@ -35,11 +35,69 @@ class TwentyFortyEight():
     
     def move(self, direction):
         # Move in a direction
+        if direction == "Up" or direction == "u":
+            self._move_up
+        elif direction == "Down" or direction == "d":
+            self._move_down
+        elif direction == "Left" or direction == "":
+            self._move_left
+        elif direction == "Right" or direction == "r":
+            self._move_up
+    
+    def _move_up(self):
+        pass
+    
+    def _move_down(self):
+        pass
+    
+    def _move_left(self):
+        pass
+    
+    def _move_right(self):
         pass
     
     def can_move(self, direction):
         # Check if a move will cause any changes
-        pass
+        if direction == "Up" or direction == "u":
+            for y in range(1,self.height):
+                for x in range(self.width):
+                    if self.board[y][x]:
+                        if ((not self.board[y-1][x]) or 
+                            self.board[y][x] == self.board[y-1][x]):
+                            return True
+                    else:
+                        continue
+            return False
+        elif direction == "Down" or direction == "d":
+            for y in range(self.height-2,-1,-1):
+                for x in range(self.width):
+                    if self.board[y][x]:
+                        if ((not self.board[y+1][x]) or 
+                            self.board[y][x] == self.board[y+1][x]):
+                            return True
+                    else:
+                        continue
+            return False
+        elif direction == "Left" or direction == "l":
+            for x in range(1,self.width):
+                for y in range(self.height):
+                    if self.board[y][x]:
+                        if ((not self.board[y][x-1]) or 
+                            self.board[y][x] == self.board[y][x-1]):
+                            return True
+                    else:
+                        continue
+            return False
+        elif direction == "Right" or direction == "r":
+            for x in range(self.width-2,-1,-1):
+                for y in range(self.height):
+                    if self.board[y][x]:
+                        if ((not self.board[y][x+1]) or 
+                            self.board[y][x] == self.board[y][x+1]):
+                            return True
+                    else:
+                        continue
+            return False
     
     @property
     def empty_spaces(self):
@@ -62,3 +120,7 @@ class TwentyFortyEight():
 if __name__ == '__main__':
     game = TwentyFortyEight()
     print(game)
+    print(f'Up: {game.can_move("u")}')
+    print(f'Down: {game.can_move("d")}')
+    print(f'Left: {game.can_move("l")}')
+    print(f'Right: {game.can_move("r")}')
