@@ -14,9 +14,12 @@ class TwentyFortyEight():
     def __str__(self):
         string = ""
         for y in range(self.height):
-            string += "\n" + "|"
+            string += "\n\n" + "|"
             for x in range(self.width):
-                string += str(self.board[y][x]).center(8) + "|"
+                if self.board[y][x]:
+                    string += str(self.board[y][x]).center(8) + "|"
+                else:
+                    string += "        " + "|"
         return string
     
     def add_num(self):
@@ -36,25 +39,128 @@ class TwentyFortyEight():
     def move(self, direction):
         # Move in a direction
         if direction == "Up" or direction == "u":
-            self._move_up
+            if self.can_move('u'):
+                self._move_up()
+                self.add_num()
         elif direction == "Down" or direction == "d":
-            self._move_down
-        elif direction == "Left" or direction == "":
-            self._move_left
+            if self.can_move('d'):
+                self._move_down()
+                self.add_num()
+        elif direction == "Left" or direction == "l":
+            if self.can_move('l'):
+                self._move_left()
+                self.add_num()
         elif direction == "Right" or direction == "r":
-            self._move_up
+            if self.can_move('r'):
+                self._move_right()
+                self.add_num()
+        # Check for game over
+        if not self.available_moves:
+            self.game_over=True
     
     def _move_up(self):
-        pass
+        for y in range(1,self.height):
+            for x in range(self.width):
+                if self.board[y][x]:
+                    holdy = y
+                    at_zero = False
+                    while True:
+
+                        if self.board[holdy-1][x] == 0:
+                            self.board[holdy-1][x] = self.board[holdy][x]
+                            self.board[holdy][x] = 0
+                            holdy-=1
+                        else:
+                            break
+                        if holdy < 1:
+                            at_zero = True
+                            break
+                    if not at_zero:
+                        if self.board[holdy][x] == self.board[holdy-1][x]:
+                            loc1 = (holdy-1,x)
+                            loc2 = (holdy,x)
+                            self._combine(loc1,loc2)
+                else:
+                    continue
     
     def _move_down(self):
-        pass
-    
+        for y in range(self.height-2,-1,-1):
+            for x in range(self.width):
+                if self.board[y][x]:
+                    holdy = y
+                    at_max = False
+                    while True:
+                        if self.board[holdy+1][x] == 0:
+                            self.board[holdy+1][x] = self.board[holdy][x]
+                            self.board[holdy][x] = 0
+                            holdy+=1
+                        else:
+                            break
+                        if holdy >= self.height-1:
+                            at_max = True
+                            break
+                    if not at_max:
+                        if self.board[holdy][x] == self.board[holdy+1][x]:
+                            loc1 = (holdy+1,x)
+                            loc2 = (holdy,x)
+                            self._combine(loc1,loc2)
+                else:
+                    continue
+                
     def _move_left(self):
-        pass
+        for x in range(1,self.width):
+            for y in range(self.height):
+                if self.board[y][x]:
+                    holdx = x
+                    at_zero = False
+                    while True:
+                        if self.board[y][holdx-1] == 0:
+                            self.board[y][holdx-1] = self.board[y][holdx]
+                            self.board[y][holdx] = 0
+                            holdx-=1
+                        else:
+                            break
+                        if holdx < 1:
+                            at_zero = True
+                            break
+                    if not at_zero:
+                        if self.board[y][holdx] == self.board[y][holdx-1]:
+                            loc1 = (y,holdx-1)
+                            loc2 = (y,holdx)
+                            self._combine(loc1,loc2)
+                else:
+                    continue
     
     def _move_right(self):
-        pass
+        for x in range(self.width-2,-1,-1):
+            for y in range(self.height):
+                if self.board[y][x]:
+                    holdx = x
+                    at_max = False
+                    while True:
+                        if self.board[y][holdx+1] == 0:
+                            self.board[y][holdx+1] = self.board[y][holdx]
+                            self.board[y][holdx] = 0
+                            holdx+=1
+                        else:
+                            break
+                        if holdx >= self.width-1:
+                            at_max = True
+                            break
+                    if not at_max:
+                        if self.board[y][holdx] == self.board[y][holdx+1]:
+                            loc1 = (y,holdx+1)
+                            loc2 = (y,holdx)
+                            self._combine(loc1,loc2)
+                else:
+                    continue
+    
+    def _combine(self, loc1, loc2):
+        # Combine the two locations, increment the score and
+        # set loc2 to 0
+        self.board[loc1[0]][loc1[1]] *= 2
+        self.board[loc2[0]][loc2[1]] = 0
+        self.score += self.board[loc1[0]][loc1[1]]
     
     def can_move(self, direction):
         # Check if a move will cause any changes
@@ -113,14 +219,17 @@ class TwentyFortyEight():
     @property
     def available_moves(self):
         # Return the number of available moves
-        avaiable_moves = 0
-        return avaiable_moves
+        available_moves = 0
+        for dir in ('u','d','l','r'):
+            if self.can_move(dir):
+                available_moves += 1
+        return available_moves
 
 
 if __name__ == '__main__':
     game = TwentyFortyEight()
-    print(game)
-    print(f'Up: {game.can_move("u")}')
-    print(f'Down: {game.can_move("d")}')
-    print(f'Left: {game.can_move("l")}')
-    print(f'Right: {game.can_move("r")}')
+    while not game.game_over:
+        print(game)
+        print(f'Score: {game.score}')
+        game.move(input())
+    print("GAME OVER")
