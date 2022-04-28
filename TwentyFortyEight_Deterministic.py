@@ -1,6 +1,7 @@
 import numpy as np
 
-last_num_added = 4
+
+np.random.seed(10)
 
 class TwentyFortyEight():
     score = 0
@@ -10,6 +11,7 @@ class TwentyFortyEight():
         self.width = width
         self.height = height
         self.board = np.zeros(shape=(height,width), dtype=np.uint16)
+        np.random.seed(10)
         self.add_num()
         self.add_num()
         
@@ -35,7 +37,7 @@ class TwentyFortyEight():
             loc = np.random.randint(len(empty_spaces))
             y = empty_spaces[loc][0]
             x = empty_spaces[loc][1]
-            self.board[y][x] = np.random.randint(low=1,high=3)*2
+            self.board[y][x] = np.random.randint(low=1, high=3)*2
             return (y,x)
     
     def move(self, direction):

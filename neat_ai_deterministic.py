@@ -7,24 +7,25 @@ import math
 import os
 import neat
 import visualize
-import TwentyFortyEight
+import TwentyFortyEight_Deterministic
 import statistics
 
 outputs = ["u", "d", "l", "r"]
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
-num_games = 5
+NUM_GAMES = 1
+GENERATIONS = 300
 
 def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
         net = neat.nn.FeedForwardNetwork.create(genome, config)
-        genome.fitness = play_game(net, config, games=num_games)[0]
+        genome.fitness = play_game(net, config, games=NUM_GAMES)[0]
 
 def play_game(net, config, genome=None, games=1):
     scores = []
     moves = []
     for i in range(games):
         
-        game = TwentyFortyEight.TwentyFortyEight()
+        game = TwentyFortyEight_Deterministic.TwentyFortyEight()
         num_moves = 0
 
         board = []
@@ -65,7 +66,7 @@ def run(config_file):
     p.add_reporter(neat.Checkpointer(5))
 
     # Run for up to 300 generations.
-    winner = p.run(eval_genomes, 300)
+    winner = p.run(eval_genomes, GENERATIONS)
 
     # Display the winning genome.
     print('\nBest genome:\n{!s}'.format(winner))
@@ -74,11 +75,11 @@ def run(config_file):
     print('\nOutput:')
     winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
     winner.moves=[]
-    high_score, num_moves = play_game(winner_net, config, genome=winner, games=num_games)
+    high_score, num_moves = play_game(winner_net, config, genome=winner, games=NUM_GAMES)
     print('\nMoves:')
     for move in winner.moves:
-        print(move[0])
         print(f'First Choice: {move[1]} Taken: {move[2]}')
+        print(move[0])
     print(f'Score: {high_score} Num Moves: {num_moves}')
 
     visualize.draw_net(config, winner, True)
