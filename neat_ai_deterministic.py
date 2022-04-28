@@ -1,9 +1,7 @@
-"""
-2-input XOR example -- this is most likely the simplest possible example.
-"""
 
 from __future__ import print_function
 import math
+import pickle
 import os
 import neat
 import visualize
@@ -13,7 +11,7 @@ import statistics
 outputs = ["u", "d", "l", "r"]
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
 NUM_GAMES = 1
-GENERATIONS = 300
+GENERATIONS = 5
 
 def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
@@ -65,9 +63,17 @@ def run(config_file):
     p.add_reporter(stats)
     p.add_reporter(neat.Checkpointer(5))
 
-    # Run for up to 300 generations.
+    # Run for up to GENERATIONS generations.
     winner = p.run(eval_genomes, GENERATIONS)
-
+    
+    #Save the winner to a file
+    print("Saving Winner")
+    path = f'nets/{int(winner.fitness)}-Deterministic.pkl'
+    
+    with open(path, "wb") as f:
+        pickle.dump(winner, f)
+        pickle.dump(config, f)
+    
     # Display the winning genome.
     print('\nBest genome:\n{!s}'.format(winner))
 

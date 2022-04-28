@@ -2,6 +2,7 @@ docs/
 *svg
 *gv
 neat-*
+nets/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
