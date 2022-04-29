@@ -11,7 +11,7 @@ import statistics
 outputs = ["u", "d", "l", "r"]
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
 NUM_GAMES = 1
-GENERATIONS = 5
+GENERATIONS = 1000
 
 def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
@@ -42,7 +42,7 @@ def play_game(net, config, genome=None, games=1):
                 if game.can_move(outputs[output[1]]):
                     game.move(outputs[output[1]])
                     if genome:
-                        tup = (game.board.copy(), outputs[outputs_sorted[0][1]], outputs[output[1]])
+                        tup = (game.board.copy(), outputs[outputs_sorted[0][1]], outputs[output[1]], output)
                         genome.moves.append(tup)
         scores.append(game.score)
         moves.append(num_moves)
@@ -65,10 +65,13 @@ def run(config_file):
 
     # Run for up to GENERATIONS generations.
     winner = p.run(eval_genomes, GENERATIONS)
+    final_fitness = int(winner.fitness)
     
     #Save the winner to a file
     print("Saving Winner")
-    path = f'nets/{int(winner.fitness)}-Deterministic.pkl'
+    base_path = f'nets/{final_fitness}-Deterministic'
+    os.mkdir(base_path)
+    path = os.path.join(base_path, f'{final_fitness}-Deterministic.pkl')
     
     with open(path, "wb") as f:
         pickle.dump(winner, f)
@@ -86,14 +89,18 @@ def run(config_file):
     for move in winner.moves:
         print(f'First Choice: {move[1]} Taken: {move[2]}')
         print(move[0])
+        print(move[3])
     print(f'Score: {high_score} Num Moves: {num_moves}')
 
-    visualize.draw_net(config, winner, True)
-    visualize.plot_stats(stats, ylog=False, view=True)
-    visualize.plot_species(stats, view=True)
+    visualize.draw_net(config, winner, True,
+                    filename=os.path.join(base_path, f'net-{int(winner.fitness)}.gv'))
+    visualize.plot_stats(stats, ylog=False, view=True,
+                    filename=os.path.join(base_path, f'avg_fitness-{int(winner.fitness)}.svg'))
+    visualize.plot_species(stats, view=True,
+                    filename=os.path.join(base_path, f'speciation-{int(winner.fitness)}.svg'))
 
-    p = neat.Checkpointer.restore_checkpoint('neat-checkpoint-4')
-    p.run(eval_genomes, 10)
+    #p = neat.Checkpointer.restore_checkpoint('neat-checkpoint-4')
+    #p.run(eval_genomes, 10)
 
 
 if __name__ == '__main__':
