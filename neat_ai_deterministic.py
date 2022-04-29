@@ -11,7 +11,7 @@ import statistics
 outputs = ["u", "d", "l", "r"]
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
 NUM_GAMES = 1
-GENERATIONS = 1000
+GENERATIONS = 10
 
 def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
@@ -35,14 +35,14 @@ def play_game(net, config, genome=None, games=1):
                     board.append(int(game.board[y][x]))
                 
             num_moves += 1
-            output = net.activate(board)
-            outputs_sorted = [(output[i],i) for i in range(len(output))]
-            outputs_sorted.sort()
+            output_ = net.activate(board)
+            outputs_sorted = [[output_[i],i] for i in range(len(output_))]
+            outputs_sorted.sort(key=lambda x: x[0], reverse=True)
             for output in outputs_sorted:
                 if game.can_move(outputs[output[1]]):
                     game.move(outputs[output[1]])
                     if genome:
-                        tup = (game.board.copy(), outputs[outputs_sorted[0][1]], outputs[output[1]], output)
+                        tup = (game.board.copy(), outputs[outputs_sorted[0][1]], outputs[output[1]], output_)
                         genome.moves.append(tup)
         scores.append(game.score)
         moves.append(num_moves)
