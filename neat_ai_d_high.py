@@ -45,7 +45,7 @@ def play_game(net, config, genome=None, games=1):
                         genome.moves.append(tup)
         scores.append(max(board))
         moves.append(num_moves)
-    return float(statistics.median(scores)), float(statistics.median(moves), game.score)
+    return float(statistics.median(scores)), float(statistics.median(moves)), game.score
     
 def run(config_file):
     # Load configuration.
