@@ -27,28 +27,23 @@ def play_game(net, config, genome=None, games=1):
         game = TwentyFortyEight_Deterministic.TwentyFortyEight(seed=SEEDS[i])
         num_moves = 0
         board = []
-        last_board = []
-        stale_moves = 0
 
-        while not game.game_over and stale_moves <= 10:
+        while not game.game_over:
             board = []
             for y in range(len(game.board)):
                 for x in range(len(game.board[0])):
                     board.append(int(game.board[y][x]))
                 
+            num_moves += 1
             output_ = net.activate(board)
-            move = outputs[output_.index(max(output_))]
-            game.move(move)
-            if board == last_board:
-                stale_moves += 1
-            else:
-                stale_moves = 0
-                num_moves += 1
-                if genome:
-                    tup = (game.board.copy(), move, output_)
-                    genome.moves.append(tup)
-            last_board = board.copy()
-                
+            outputs_sorted = [[output_[i],i] for i in range(len(output_))]
+            outputs_sorted.sort(key=lambda x: x[0], reverse=True)
+            for output in outputs_sorted:
+                if game.can_move(outputs[output[1]]):
+                    game.move(outputs[output[1]])
+                    if genome:
+                        tup = (game.board.copy(), outputs[outputs_sorted[0][1]], outputs[output[1]], output_)
+                        genome.moves.append(tup)
         scores.append(game.score)
         moves.append(num_moves)
     return float(statistics.mean(scores)), float(statistics.mean(moves)), game.score
@@ -92,9 +87,9 @@ def run(config_file):
     fitness, num_moves, score = play_game(winner_net, config, genome=winner, games=NUM_GAMES)
     print('\nMoves:')
     for move in winner.moves:
-        print(f'Move Taken: {move[1]}')
-        print(move[2])
+        print(f'First Choice: {move[1]} Taken: {move[2]}')
         print(move[0])
+        print(move[3])
     print(f'Score: {score} Num Moves: {num_moves}')
 
     visualize.draw_net(config, winner, True,
