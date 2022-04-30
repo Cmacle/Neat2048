@@ -43,7 +43,7 @@ def play_game(net, config, genome=None, games=1):
                     if genome:
                         tup = (game.board.copy(), outputs[outputs_sorted[0][1]], outputs[output[1]], output_)
                         genome.moves.append(tup)
-        scores.append(max(board))
+        scores.append(max(board)-num_moves)
         moves.append(num_moves)
     return float(statistics.median(scores)), float(statistics.median(moves)), game.score
     
