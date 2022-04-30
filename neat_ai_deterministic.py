@@ -10,8 +10,9 @@ import statistics
 
 outputs = ["u", "d", "l", "r"]
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
-NUM_GAMES = 1
-GENERATIONS = 10
+NUM_GAMES = 5
+GENERATIONS = 10000
+SEEDS = [10, 1322, 3425, 9876, 2345, 1234, 11, 15, 895, 3472, 17, 28, 48, 65]
 
 def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
@@ -23,9 +24,8 @@ def play_game(net, config, genome=None, games=1):
     moves = []
     for i in range(games):
         
-        game = TwentyFortyEight_Deterministic.TwentyFortyEight()
+        game = TwentyFortyEight_Deterministic.TwentyFortyEight(seed=SEEDS[i])
         num_moves = 0
-
         board = []
 
         while not game.game_over:
@@ -46,7 +46,7 @@ def play_game(net, config, genome=None, games=1):
                         genome.moves.append(tup)
         scores.append(game.score)
         moves.append(num_moves)
-    return float(statistics.median(scores)), float(statistics.median(moves))
+    return float(statistics.mean(scores)), float(statistics.mean(moves)), game.score
     
 def run(config_file):
     # Load configuration.
@@ -84,13 +84,13 @@ def run(config_file):
     print('\nOutput:')
     winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
     winner.moves=[]
-    high_score, num_moves = play_game(winner_net, config, genome=winner, games=NUM_GAMES)
+    fitness, num_moves, score = play_game(winner_net, config, genome=winner, games=NUM_GAMES)
     print('\nMoves:')
     for move in winner.moves:
         print(f'First Choice: {move[1]} Taken: {move[2]}')
         print(move[0])
         print(move[3])
-    print(f'Score: {high_score} Num Moves: {num_moves}')
+    print(f'Score: {score} Num Moves: {num_moves}')
 
     visualize.draw_net(config, winner, True,
                     filename=os.path.join(base_path, f'net-{int(winner.fitness)}.gv'))
