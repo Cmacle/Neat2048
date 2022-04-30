@@ -1,17 +1,17 @@
 import numpy as np
 
 
-np.random.seed(10)
+
 
 class TwentyFortyEight():
     score = 0
     game_over = False
     
-    def __init__(self, width=4, height=4):
+    def __init__(self, width=4, height=4, seed=10):
         self.width = width
         self.height = height
         self.board = np.zeros(shape=(height,width), dtype=np.uint16)
-        np.random.seed(10)
+        np.random.seed(seed)
         self.add_num()
         self.add_num()
         
