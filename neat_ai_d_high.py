@@ -45,7 +45,7 @@ def play_game(net, config, genome=None, games=1):
                         genome.moves.append(tup)
         scores.append(max(board))
         moves.append(num_moves)
-    return float(statistics.median(scores)), float(statistics.median(moves))
+    return float(statistics.median(scores)), float(statistics.median(moves), game.score)
     
 def run(config_file):
     # Load configuration.
@@ -83,13 +83,13 @@ def run(config_file):
     print('\nOutput:')
     winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
     winner.moves=[]
-    high_score, num_moves = play_game(winner_net, config, genome=winner, games=NUM_GAMES)
+    fitness, num_moves, score = play_game(winner_net, config, genome=winner, games=NUM_GAMES)
     print('\nMoves:')
     for move in winner.moves:
         print(f'First Choice: {move[1]} Taken: {move[2]}')
         print(move[0])
         print(move[3])
-    print(f'Score: {high_score} Num Moves: {num_moves}')
+    print(f'Score: {score} Num Moves: {num_moves}')
 
     visualize.draw_net(config, winner, True,
                     filename=os.path.join(base_path, f'net-{int(winner.fitness)}.gv'))
