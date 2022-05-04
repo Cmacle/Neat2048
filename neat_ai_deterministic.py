@@ -13,7 +13,6 @@ outputs = ["u", "d", "l", "r"]
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
 NUM_GAMES = 5
 GENERATIONS = 10000
-SEEDS = [10, 1322, 3425, 9876, 2345, 1234, 11, 15, 895, 3472, 17, 28, 48, 65]
 
 def eval_genomes(genomes, config):
     for genome_id, genome in genomes:
@@ -25,7 +24,7 @@ def play_game(net, config, genome=None, games=1):
     moves = []
     for i in range(games):
         
-        game = TwentyFortyEight_Deterministic.TwentyFortyEight(seed=SEEDS[i])
+        game = TwentyFortyEight_Deterministic.TwentyFortyEight(seed=i)
         num_moves = 0
         board = []
 
