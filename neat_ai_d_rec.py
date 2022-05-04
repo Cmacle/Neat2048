@@ -1,5 +1,6 @@
 
 from __future__ import print_function
+from genericpath import isdir
 import math
 import pickle
 import os
@@ -11,7 +12,7 @@ import statistics
 outputs = ["u", "d", "l", "r"]
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
 NUM_GAMES = 5
-GENERATIONS = 100
+GENERATIONS = 5
 SEEDS = [10, 1322, 3425, 9876, 2345, 1234, 11, 15, 895, 3472, 17, 28, 48, 65]
 
 def eval_genomes(genomes, config):
@@ -70,6 +71,8 @@ def run(config_file):
     #Save the winner to a file
     print("Saving Winner")
     base_path = f'nets/{final_fitness}-Deterministic'
+    if not isdir('nets/'):
+        os.mkdir('nets/')
     os.mkdir(base_path)
     path = os.path.join(base_path, f'{final_fitness}-Deterministic.pkl')
     
