@@ -10,7 +10,7 @@ OUTPUTS = ["u", "d", "l", "r"]
 def create_network(netpath):
     with open(netpath, 'rb') as f:
         data = pickle.load(f)
-    return neat.nn.FeedForwardNetwork.create(data[0], data[1])
+    return neat.nn.RecurrentNetwork.create(data[0], data[1])
 
 
 def play_game(net, games=1):

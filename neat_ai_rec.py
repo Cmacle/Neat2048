@@ -9,17 +9,19 @@ import visualize
 import TwentyFortyEight_Deterministic
 import statistics
 
-outputs = ["u", "d", "l", "r"]
+OUTPUTS = ["u", "d", "l", "r"]
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
-NUM_GAMES = 1
-GENERATIONS = 10000
+NUM_GAMES = 5
+GENERATIONS = 5
+# 'score' for highest game score, 'max' for highest tile - num moves
+SCORING_METHOD = 'score'
 
-def eval_genomes(genomes, config):
+def eval_genomes(genomes, config, scoring_method="score"):
     for genome_id, genome in genomes:
-        net = neat.nn.FeedForwardNetwork.create(genome, config)
-        genome.fitness = play_game(net, config, games=NUM_GAMES)[0]
+        net = neat.nn.RecurrentNetwork.create(genome, config)
+        genome.fitness = play_game(net, config, games=NUM_GAMES, scoring_method=scoring_method)[0]
 
-def play_game(net, config, genome=None, games=1):
+def play_game(net, config, genome=None, games=1, scoring_method="score"):
     scores = []
     moves = []
     for i in range(games):
@@ -35,16 +37,19 @@ def play_game(net, config, genome=None, games=1):
                     board.append(int(game.board[y][x]))
                 
             num_moves += 1
-            output_ = net.activate(board)
-            outputs_sorted = [[output_[i],i] for i in range(len(output_))]
+            net_output = net.activate(board)
+            outputs_sorted = [[net_output[i],i] for i in range(len(net_output))]
             outputs_sorted.sort(key=lambda x: x[0], reverse=True)
             for output in outputs_sorted:
-                if game.can_move(outputs[output[1]]):
-                    game.move(outputs[output[1]])
+                if game.can_move(OUTPUTS[output[1]]):
+                    game.move(OUTPUTS[output[1]])
                     if genome:
-                        tup = (game.board.copy(), outputs[outputs_sorted[0][1]], outputs[output[1]], output_)
+                        tup = (game.board.copy(), OUTPUTS[outputs_sorted[0][1]], OUTPUTS[output[1]], net_output)
                         genome.moves.append(tup)
-        scores.append(max(board)-num_moves)
+        if scoring_method == 'max':
+            scores.append(max(board) - num_moves)
+        else:
+            scores.append(game.score)
         moves.append(num_moves)
     return float(statistics.mean(scores)), float(statistics.mean(moves)), game.score
     
@@ -69,22 +74,22 @@ def run(config_file):
     
     #Save the winner to a file
     print("Saving Winner")
-    base_path = f'nets/{final_fitness}-Deterministic'
+    base_path = f'nets/{final_fitness}-Rec'
     if not isdir('nets/'):
         os.mkdir('nets/')
     os.mkdir(base_path)
-    path = os.path.join(base_path, f'{final_fitness}-Deterministic.pkl')
+    path = os.path.join(base_path, f'{final_fitness}-Rec.pkl')
     
     with open(path, "wb") as f:
-        pickle.dump(winner, f)
-        pickle.dump(config, f)
+        data = (winner,config) 
+        pickle.dump(data,f)
     
     # Display the winning genome.
     print('\nBest genome:\n{!s}'.format(winner))
 
     # Show output of the most fit genome against training data.
     print('\nOutput:')
-    winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
+    winner_net = neat.nn.RecurrentNetwork.create(winner, config)
     winner.moves=[]
     fitness, num_moves, score = play_game(winner_net, config, genome=winner, games=NUM_GAMES)
     print('\nMoves:')
@@ -110,5 +115,5 @@ if __name__ == '__main__':
     # here so that the script will run successfully regardless of the
     # current working directory.
     local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, 'neat_config_ff')
+    config_path = os.path.join(local_dir, 'neat_config_rec')
     run(config_path)
