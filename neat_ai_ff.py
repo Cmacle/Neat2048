@@ -16,7 +16,7 @@ GENERATIONS = 1000
 
 def eval_genomes(genomes, config, scoring_method="score"):
     for genome_id, genome in genomes:
-        net = neat.nn.RecurrentNetwork.create(genome, config)
+        net = neat.nn.FeedForwardNetwork.create(genome, config)
         genome.fitness = play_game(net, config, games=NUM_GAMES, scoring_method=scoring_method)[0]
 
 def play_game(net, config, genome=None, games=1, scoring_method="score"):
