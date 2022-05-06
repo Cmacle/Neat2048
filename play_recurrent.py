@@ -38,7 +38,7 @@ def play_game(net, games=1):
                     game.move(OUTPUTS[output[1]])
                     tup = (str(game), OUTPUTS[outputs_sorted[0][1]], OUTPUTS[output[1]], net_output)
                     moves.append(tup)
-            break
+                break
         scores.append(game.score)
         all_moves.append(moves)
     return scores, all_moves

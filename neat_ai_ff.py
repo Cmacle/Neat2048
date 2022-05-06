@@ -44,7 +44,7 @@ def play_game(net, config, genome=None, games=1, scoring_method="score"):
                     if genome:
                         tup = (game.board.copy(), OUTPUTS[outputs_sorted[0][1]], OUTPUTS[output[1]], net_output)
                         genome.moves.append(tup)
-                break
+                    break
         if scoring_method == 'max':
             scores.append(max(board) - num_moves)
         else:
