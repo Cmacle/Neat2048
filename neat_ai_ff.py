@@ -11,8 +11,8 @@ import statistics
 
 OUTPUTS = ["u", "d", "l", "r"]
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
-NUM_GAMES = 5
-GENERATIONS = 10
+NUM_GAMES = 3
+GENERATIONS = 100000
 # 'score' for highest game score, 'max' for highest tile - num moves
 SCORING_METHOD = 'score'
 
