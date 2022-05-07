@@ -12,9 +12,11 @@ import statistics
 OUTPUTS = ["u", "d", "l", "r"]
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
 NUM_GAMES = 5
-GENERATIONS = 1000
+GENERATIONS = 10
+# 'score' for highest game score, 'max' for highest tile - num moves
+SCORING_METHOD = 'score'
 
-def eval_genomes(genomes, config, scoring_method="score"):
+def eval_genomes(genomes, config, scoring_method=SCORING_METHOD):
     for genome_id, genome in genomes:
         net = neat.nn.FeedForwardNetwork.create(genome, config)
         genome.fitness = play_game(net, config, games=NUM_GAMES, scoring_method=scoring_method)[0]
@@ -73,7 +75,7 @@ def run(config_file):
     
     #Save the winner to a file
     print("Saving Winner")
-    base_path = f'nets/{final_fitness}-FF'
+    base_path = f'nets/{final_fitness}-{SCORING_METHOD.upper()}-FF'
     if not isdir('nets/'):
         os.mkdir('nets/')
     os.mkdir(base_path)
