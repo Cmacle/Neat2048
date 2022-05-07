@@ -31,10 +31,10 @@ def play_game(net, config, genome=None, games=1, scoring_method="score"):
         board = []
 
         while not game.game_over:
-            board = []
-            for y in range(len(game.board)):
-                for x in range(len(game.board[0])):
-                    board.append(int(game.board[y][x]))
+            board = game.board.flatten()
+            #for y in range(len(game.board)):
+            #    for x in range(len(game.board[0])):
+            #        board.append(int(game.board[y][x]))
                 
             num_moves += 1
             net_output = net.activate(board)
