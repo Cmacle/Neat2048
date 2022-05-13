@@ -11,8 +11,8 @@ import statistics
 
 OUTPUTS = ["u", "d", "l", "r"]
 os.environ["PATH"] += os.pathsep + 'C:/Program Files/Graphviz/bin'
-NUM_GAMES = 5
-GENERATIONS = 10
+NUM_GAMES = 25
+GENERATIONS = 10000
 # 'score' for highest game score, 'max' for highest tile - num moves
 SCORING_METHOD = 'score'
 
@@ -50,9 +50,9 @@ def play_game(net, config, genome=None, games=1, scoring_method="score"):
         if scoring_method == 'max':
             scores.append(max(board) - num_moves)
         else:
-            scores.append(game.score)
+            scores.append(game.score - num_moves)
         moves.append(num_moves)
-    return float(statistics.mean(scores)), float(statistics.mean(moves)), game.score
+    return float(min(scores)), float(statistics.mean(moves)), game.score
     
 def run(config_file):
     # Load configuration.
@@ -75,7 +75,7 @@ def run(config_file):
     
     #Save the winner to a file
     print("Saving Winner")
-    base_path = f'nets/{final_fitness}-{SCORING_METHOD.upper()}-FF'
+    base_path = f'nets/{final_fitness}-{SCORING_METHOD.upper()}-LOWEST-FF'
     if not isdir('nets/'):
         os.mkdir('nets/')
     os.mkdir(base_path)
